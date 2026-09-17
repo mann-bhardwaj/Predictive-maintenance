@@ -1,0 +1,28 @@
+{
+  "threshold": 0.251,
+  "pr_auc": 0.8768118700750915,
+  "roc_auc": 0.9687614176105226,
+  "precision": 0.7073170731707317,
+  "recall": 0.8529411764705882,
+  "specificity": 0.9875776397515528,
+  "f1": 0.7733333333333334,
+  "f2": 0.8192090395480225,
+  "brier": 0.009575761654922502,
+  "tn": 1908,
+  "fp": 24,
+  "fn": 10,
+  "tp": 58,
+  "cost_units": 124.0,
+  "cost_do_nothing": 680.0,
+  "cost_saved_vs_do_nothing": 556.0,
+  "cost_saved_pct": 81.76470588235294,
+  "recall_at_90_precision": {
+    "min_precision": 0.9,
+    "recall": 0.7647058823529411,
+    "precision": 0.9122807017543859,
+    "threshold": 0.48004840323402787,
+    "achievable": true
+  },
+  "model": "Random forest",
+  "n_test": 2000
+}

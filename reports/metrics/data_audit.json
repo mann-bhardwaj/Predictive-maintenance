@@ -1,0 +1,34 @@
+{
+  "audit": {
+    "n_rows": 10000,
+    "n_missing": 0,
+    "n_duplicate_ids": 0,
+    "n_failures": 339,
+    "failure_rate": 0.0339,
+    "mode_counts": {
+      "TWF": 46,
+      "HDF": 115,
+      "PWF": 95,
+      "OSF": 98,
+      "RNF": 19
+    },
+    "n_failure_no_mode": 9,
+    "n_mode_without_failure": 0,
+    "n_multi_mode": 23,
+    "multi_mode_combos": {
+      "PWF+OSF": 11,
+      "HDF+OSF": 6,
+      "HDF+PWF": 3,
+      "TWF+OSF": 2,
+      "TWF+PWF+OSF": 1
+    },
+    "n_rnf_flagged": 19,
+    "n_rnf_and_failure": 1
+  },
+  "noise_floor": {
+    "n_failures": 339,
+    "n_unexplained_failures": 9,
+    "unexplained_share_of_failures": 0.02654867256637168,
+    "n_explainable_failures": 330
+  }
+}

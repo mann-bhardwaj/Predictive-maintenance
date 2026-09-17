@@ -1,0 +1,26 @@
+# Core
+# Use Python 3.11.x for this project; XGBoost on macOS needs libomp installed.
+pandas>=2.0
+numpy>=1.24
+scikit-learn>=1.3
+xgboost>=2.0
+
+# Explainability
+shap>=0.44
+
+# Visualisation
+matplotlib>=3.7
+
+# Dashboard
+streamlit>=1.30
+
+# Notebooks
+jupyter>=1.0
+nbformat>=5.9
+
+# Parquet I/O for the processed splits
+pyarrow>=14.0
+
+# Verified against: pandas 3.0.2, numpy 2.4.4, scikit-learn 1.8.0,
+# xgboost 3.2.0, shap 0.51.0, matplotlib 3.10.x, streamlit 1.64.0,
+# Python 3.11.

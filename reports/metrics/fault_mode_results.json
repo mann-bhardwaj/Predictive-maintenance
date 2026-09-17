@@ -1,0 +1,48 @@
+{
+  "per_mode": [
+    {
+      "mode": "TWF",
+      "label": "Tool wear failure",
+      "train_positives": 36,
+      "test_positives": 10,
+      "cv_pr_auc": 0.8887,
+      "cv_roc_auc": 0.9739,
+      "test_pr_auc": 0.7384,
+      "test_roc_auc": 0.9446
+    },
+    {
+      "mode": "HDF",
+      "label": "Heat dissipation failure",
+      "train_positives": 93,
+      "test_positives": 22,
+      "cv_pr_auc": 0.9984,
+      "cv_roc_auc": 0.9991,
+      "test_pr_auc": 1.0,
+      "test_roc_auc": 1.0
+    },
+    {
+      "mode": "PWF",
+      "label": "Power failure",
+      "train_positives": 75,
+      "test_positives": 20,
+      "cv_pr_auc": 1.0,
+      "cv_roc_auc": 1.0,
+      "test_pr_auc": 0.9976,
+      "test_roc_auc": 0.9989
+    },
+    {
+      "mode": "OSF",
+      "label": "Overstrain failure",
+      "train_positives": 78,
+      "test_positives": 20,
+      "cv_pr_auc": 0.9924,
+      "cv_roc_auc": 0.9971,
+      "test_pr_auc": 0.9925,
+      "test_roc_auc": 0.9967
+    }
+  ],
+  "top1_accuracy": 0.9696969696969697,
+  "n_train_rows": 264,
+  "n_test_rows": 66,
+  "note": "Conditional model: trained and evaluated only on rows with a recorded failure carrying at least one physical mode flag. RNF and mode-less failures are excluded by design."
+}

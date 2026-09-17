@@ -1,0 +1,39 @@
+{
+  "pr_auc": 0.36445063098248215,
+  "roc_auc": 0.8918980635732554,
+  "base_failure_rate": 0.034,
+  "top_k": [
+    {
+      "fraction_inspected": 0.01,
+      "machines_inspected": 20,
+      "failures_found": 13,
+      "recall": 0.19117647058823528,
+      "precision": 0.65,
+      "lift_vs_random": 19.11764705882353
+    },
+    {
+      "fraction_inspected": 0.034,
+      "machines_inspected": 68,
+      "failures_found": 29,
+      "recall": 0.4264705882352941,
+      "precision": 0.4264705882352941,
+      "lift_vs_random": 12.543252595155709
+    },
+    {
+      "fraction_inspected": 0.05,
+      "machines_inspected": 100,
+      "failures_found": 37,
+      "recall": 0.5441176470588235,
+      "precision": 0.37,
+      "lift_vs_random": 10.88235294117647
+    },
+    {
+      "fraction_inspected": 0.1,
+      "machines_inspected": 200,
+      "failures_found": 42,
+      "recall": 0.6176470588235294,
+      "precision": 0.21,
+      "lift_vs_random": 6.1764705882352935
+    }
+  ]
+}

@@ -1,0 +1,834 @@
+<title>AI4I Milling Line Report</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Condensed:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root {
+    --ground:      #eef0f2;
+    --surface:     #ffffff;
+    --surface-2:   #f7f8f9;
+    --plate:       #fcfcfb;
+    --ink:         #0e1317;
+    --ink-2:       #4a535c;
+    --ink-3:       #7d8791;
+    --rule:        #d9dee2;
+    --rule-strong: #b9c1c8;
+    --accent:      #2a78d6;
+    --accent-deep: #184f95;
+    --accent-wash: #e8f0fb;
+    --good:        #0a8a0a;
+    --warn:        #b07200;
+    --warn-wash:   #fdf4e0;
+    --crit:        #c22f2f;
+    --crit-wash:   #fceded;
+    --shadow:      0 1px 2px rgba(14,19,23,.06), 0 8px 24px -16px rgba(14,19,23,.18);
+
+    --f-display: "IBM Plex Sans Condensed", "Helvetica Neue", Arial, sans-serif;
+    --f-body:    "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --f-mono:    "IBM Plex Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --ground:      #0d1013;
+      --surface:     #161a1e;
+      --surface-2:   #1c2126;
+      --plate:       #f2f2f0;
+      --ink:         #eef1f3;
+      --ink-2:       #aab4bd;
+      --ink-3:       #7a848d;
+      --rule:        #272d33;
+      --rule-strong: #3a424a;
+      --accent:      #4d95e8;
+      --accent-deep: #8fbdf2;
+      --accent-wash: #16273d;
+      --good:        #3fbb3f;
+      --warn:        #e0a52a;
+      --warn-wash:   #2c2312;
+      --crit:        #e36060;
+      --crit-wash:   #2e1717;
+      --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+    }
+  }
+  :root[data-theme="dark"] {
+    --ground:      #0d1013;
+    --surface:     #161a1e;
+    --surface-2:   #1c2126;
+    --plate:       #f2f2f0;
+    --ink:         #eef1f3;
+    --ink-2:       #aab4bd;
+    --ink-3:       #7a848d;
+    --rule:        #272d33;
+    --rule-strong: #3a424a;
+    --accent:      #4d95e8;
+    --accent-deep: #8fbdf2;
+    --accent-wash: #16273d;
+    --good:        #3fbb3f;
+    --warn:        #e0a52a;
+    --warn-wash:   #2c2312;
+    --crit:        #e36060;
+    --crit-wash:   #2e1717;
+    --shadow:      0 1px 2px rgba(0,0,0,.4), 0 8px 24px -16px rgba(0,0,0,.7);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--f-body);
+    font-size: 15px;
+    line-height: 1.62;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .sheet {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding-inline: 16px;
+    padding-block: 0 72px;
+  }
+
+  /* ---------- masthead: an instrument nameplate ---------- */
+  .plate-head {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-top: 3px solid var(--accent);
+    box-shadow: var(--shadow);
+    margin-top: 28px;
+    padding: 28px 26px 22px;
+  }
+  .stamp {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--rule);
+    margin-bottom: 20px;
+  }
+  h1 {
+    font-family: var(--f-display);
+    font-weight: 700;
+    font-size: clamp(30px, 5.2vw, 46px);
+    line-height: 1.08;
+    letter-spacing: -.015em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  .standfirst {
+    font-size: 17px;
+    color: var(--ink-2);
+    max-width: 62ch;
+    margin: 0;
+  }
+
+  /* ---------- headline readings ---------- */
+  .readings {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(148px, 1fr));
+    gap: 1px;
+    background: var(--rule);
+    border: 1px solid var(--rule);
+    border-top: none;
+    box-shadow: var(--shadow);
+  }
+  .reading {
+    background: var(--surface);
+    padding: 18px 18px 16px;
+  }
+  .reading .k {
+    font-family: var(--f-mono);
+    font-size: 10.5px;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 7px;
+  }
+  .reading .v {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 30px;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -.01em;
+  }
+  .reading .n {
+    display: block;
+    font-size: 12.5px;
+    color: var(--ink-3);
+    margin-top: 6px;
+  }
+  .reading.lead { background: var(--accent-wash); }
+  .reading.lead .v { color: var(--accent-deep); }
+
+  /* ---------- sections ---------- */
+  section { margin-top: 52px; }
+  .eyebrow {
+    font-family: var(--f-mono);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .eyebrow::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--rule-strong);
+  }
+  h2 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: clamp(23px, 3.4vw, 30px);
+    line-height: 1.18;
+    letter-spacing: -.012em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  h3 {
+    font-family: var(--f-display);
+    font-weight: 600;
+    font-size: 19px;
+    line-height: 1.3;
+    margin: 32px 0 8px;
+  }
+  p { margin: 0 0 15px; max-width: 68ch; }
+  .prose-wide { max-width: 78ch; }
+  ul, ol { margin: 0 0 16px; padding-left: 22px; max-width: 68ch; }
+  li { margin-bottom: 7px; }
+  strong { font-weight: 600; }
+  code {
+    font-family: var(--f-mono);
+    font-size: .88em;
+    background: var(--surface-2);
+    border: 1px solid var(--rule);
+    border-radius: 2px;
+    padding: 1px 5px;
+  }
+  a { color: var(--accent); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  /* ---------- data tables ---------- */
+  .scroller { overflow-x: auto; margin: 20px 0 8px; border: 1px solid var(--rule); background: var(--surface); }
+  table { border-collapse: collapse; width: 100%; font-size: 14px; }
+  caption {
+    caption-side: bottom;
+    text-align: left;
+    font-size: 12.5px;
+    color: var(--ink-3);
+    padding: 10px 14px 12px;
+    border-top: 1px solid var(--rule);
+  }
+  th, td {
+    text-align: left;
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--rule);
+    white-space: nowrap;
+  }
+  thead th {
+    font-family: var(--f-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    background: var(--surface-2);
+    border-bottom: 1px solid var(--rule-strong);
+  }
+  td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; font-family: var(--f-mono); font-size: 13px; }
+  tbody tr:last-child td { border-bottom: none; }
+  tr.marked td { background: var(--accent-wash); font-weight: 600; }
+  tr.marked td.num { color: var(--accent-deep); }
+
+  /* ---------- figure plates ---------- */
+  figure {
+    margin: 24px 0 8px;
+    border: 1px solid var(--rule);
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  figure .mount {
+    background: var(--plate);
+    padding: 12px;
+    border-bottom: 1px solid var(--rule);
+  }
+  figure img { display: block; width: 100%; max-width: 100%; height: auto; }
+  figcaption {
+    font-size: 13px;
+    color: var(--ink-2);
+    padding: 12px 16px 14px;
+    max-width: 82ch;
+  }
+  figcaption b {
+    font-family: var(--f-mono);
+    font-size: 10.5px;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ink-3);
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+  }
+  .pair { display: grid; grid-template-columns: repeat(auto-fit, minmax(330px, 1fr)); gap: 18px; }
+  .pair figure { margin: 24px 0 8px; }
+
+  /* ---------- notices ---------- */
+  .notice {
+    border: 1px solid var(--rule-strong);
+    border-left: 4px solid var(--warn);
+    background: var(--warn-wash);
+    padding: 18px 20px;
+    margin: 24px 0;
+  }
+  .notice.crit { border-left-color: var(--crit); background: var(--crit-wash); }
+  .notice.info { border-left-color: var(--accent); background: var(--accent-wash); }
+  .notice .tag {
+    font-family: var(--f-mono);
+    font-size: 10.5px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    display: block;
+    margin-bottom: 8px;
+  }
+  .notice p:last-child { margin-bottom: 0; }
+
+  /* ---------- derived-quantity spec list ---------- */
+  .specs { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin: 20px 0; }
+  .spec { background: var(--surface); padding: 14px 16px; display: grid; grid-template-columns: minmax(0,1fr); gap: 4px; }
+  @media (min-width: 620px) {
+    .spec { grid-template-columns: 210px 200px minmax(0,1fr); align-items: baseline; gap: 16px; }
+  }
+  .spec .name { font-family: var(--f-mono); font-size: 12.5px; font-weight: 500; color: var(--ink); }
+  .spec .formula { font-family: var(--f-mono); font-size: 12.5px; color: var(--accent-deep); }
+  .spec .why { font-size: 13.5px; color: var(--ink-2); }
+
+  /* ---------- verdict strip ---------- */
+  .verdict {
+    display: flex; flex-wrap: wrap; gap: 10px 26px;
+    border: 1px solid var(--rule);
+    border-left: 4px solid var(--good);
+    background: var(--surface);
+    padding: 16px 20px;
+    margin: 22px 0;
+  }
+  .verdict div { font-size: 13.5px; }
+  .verdict .lbl {
+    font-family: var(--f-mono); font-size: 10.5px; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--ink-3); display: block;
+  }
+  .verdict .val { font-family: var(--f-display); font-weight: 600; font-size: 21px; font-variant-numeric: tabular-nums; }
+
+  footer {
+    margin-top: 56px;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule-strong);
+    font-size: 13px;
+    color: var(--ink-3);
+  }
+  footer p { max-width: 74ch; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+
+<div class="sheet">
+
+  <header class="plate-head">
+    <div class="stamp">
+      <span>Report 1.0</span>
+      <span>Dataset · AI4I 2020</span>
+      <span>10,000 cycles</span>
+      <span>Held-out n = 2,000</span>
+      <span>Seed 42</span>
+    </div>
+    <h1>Predictive maintenance and process fault detection on a milling line</h1>
+    <p class="standfirst">
+      A six-stage machine learning system that predicts spindle failure from six
+      sensor channels, names which of four physical faults is developing,
+      flags abnormal operating conditions without labels, and explains every
+      alarm in engineering terms.
+    </p>
+  </header>
+
+  <div class="readings">
+    <div class="reading lead">
+      <span class="k">PR-AUC</span>
+      <span class="v">0.877</span>
+      <span class="n">held out, scored once</span>
+    </div>
+    <div class="reading">
+      <span class="k">Recall</span>
+      <span class="v">85.3%</span>
+      <span class="n">58 of 68 failures caught</span>
+    </div>
+    <div class="reading">
+      <span class="k">Precision</span>
+      <span class="v">70.7%</span>
+      <span class="n">at the cost-optimal threshold</span>
+    </div>
+    <div class="reading">
+      <span class="k">Cost avoided</span>
+      <span class="v">81.8%</span>
+      <span class="n">vs running no system</span>
+    </div>
+    <div class="reading">
+      <span class="k">Fault diagnosis</span>
+      <span class="v">97.0%</span>
+      <span class="n">top-1 names a real mode</span>
+    </div>
+  </div>
+
+  <!-- ================= THE FINDING ================= -->
+  <section>
+    <div class="eyebrow">Principal finding</div>
+    <h2>The ten failures it missed are not a random ten</h2>
+    <p class="prose-wide">
+      Eight of them are tool-wear failures. The other two have no recorded cause
+      at all. The system missed <strong>zero</strong> heat-dissipation failures,
+      <strong>zero</strong> power failures and <strong>zero</strong> overstrain
+      failures out of 62 in the held-out set.
+    </p>
+    <p class="prose-wide">
+      That is the result worth defending. The residual error sits precisely where
+      the data itself is stochastic: the tool-wear failure rule carries a random
+      component, and the two causeless rows are label noise with identical sensor
+      readings to cycles labelled healthy. Everything with a deterministic
+      physical signature was caught.
+    </p>
+    <div class="verdict">
+      <div><span class="lbl">Heat dissipation</span><span class="val" style="color:var(--good)">22 / 22</span></div>
+      <div><span class="lbl">Power</span><span class="val" style="color:var(--good)">20 / 20</span></div>
+      <div><span class="lbl">Overstrain</span><span class="val" style="color:var(--good)">20 / 20</span></div>
+      <div><span class="lbl">Tool wear</span><span class="val" style="color:var(--warn)">2 / 10</span></div>
+      <div><span class="lbl">No recorded cause</span><span class="val" style="color:var(--ink-3)">0 / 2</span></div>
+    </div>
+    <p style="font-size:13px;color:var(--ink-3);max-width:74ch">
+      Failures caught by recorded mode, held-out set. Modes co-occur, so these
+      counts overlap; the 10 misses comprise 8 tool-wear and 2 causeless rows.
+    </p>
+  </section>
+
+  <!-- ================= STAGE 1 ================= -->
+  <section>
+    <div class="eyebrow">Stage 1 · Dataset and understanding</div>
+    <h2>Where the real cleaning work was</h2>
+    <p>
+      The AI4I 2020 dataset records 10,000 machining cycles: ambient and process
+      temperature, spindle speed, torque, cumulative tool wear, and the machine's
+      quality variant. It arrives with no missing values, no duplicate rows and
+      no duplicate identifiers — so the cleaning effort goes entirely into
+      <em>label</em> consistency, where three problems hide.
+    </p>
+    <div class="scroller">
+      <table>
+        <caption>Label integrity audit. Each finding changed a modelling decision.</caption>
+        <thead>
+          <tr><th>Finding</th><th class="num">Rows</th><th>Consequence</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>RNF</code> flags on cycles that completed fine</td>
+            <td class="num">18 of 19</td>
+            <td>Random failure kept in the binary target, excluded from fault diagnosis</td>
+          </tr>
+          <tr>
+            <td>Failures with no mode flag at all</td>
+            <td class="num">9</td>
+            <td>Kept in the binary target, excluded from fault diagnosis</td>
+          </tr>
+          <tr>
+            <td>Failures carrying two or more modes at once</td>
+            <td class="num">23</td>
+            <td>Fault diagnosis is multi-label, not multi-class</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="notice">
+      <span class="tag">Noise floor</span>
+      <p>
+        9 of 339 recorded failures — <strong>2.7%</strong> — have no physical
+        fault signature. Cycles with identical sensor readings are labelled
+        healthy elsewhere in the data, so these are unpredictable by
+        construction. Recall is judged against that ceiling, not against 100%.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= STAGE 2 ================= -->
+  <section>
+    <div class="eyebrow">Stage 2 · Feature engineering and EDA</div>
+    <h2>Six sensors are not the quantities that govern failure</h2>
+    <p>
+      Power is. Heat-rejection capacity is. Accumulated strain is. So five
+      physical quantities are derived from the raw channels:
+    </p>
+    <div class="specs">
+      <div class="spec">
+        <span class="name">mechanical_power_W</span>
+        <span class="formula">torque × speed × 2π/60</span>
+        <span class="why">Power delivered at the spindle</span>
+      </div>
+      <div class="spec">
+        <span class="name">temp_differential_K</span>
+        <span class="formula">process − air</span>
+        <span class="why">The gradient driving heat rejection into the shop air</span>
+      </div>
+      <div class="spec">
+        <span class="name">wear_torque_strain_minNm</span>
+        <span class="formula">tool_wear × torque</span>
+        <span class="why">Load-weighted time in service</span>
+      </div>
+      <div class="spec">
+        <span class="name">torque_per_rpm</span>
+        <span class="formula">torque ÷ speed</span>
+        <span class="why">Specific loading — cutting hard while turning slowly</span>
+      </div>
+      <div class="spec">
+        <span class="name">cooling_load_index</span>
+        <span class="formula">power ÷ temp_differential</span>
+        <span class="why">Watts to shed per kelvin of gradient available</span>
+      </div>
+    </div>
+
+    <div class="notice crit">
+      <span class="tag">What was deliberately not computed</span>
+      <p>
+        AI4I's labels were generated by threshold rules over these same
+        quantities — a heat-dissipation failure is recorded when the differential
+        falls below <strong>8.6 K</strong> while speed is below
+        <strong>1380 rpm</strong>. Encoding those thresholds as features
+        produces near-perfect scores and is, correctly, dismissed as circular.
+      </p>
+      <p>
+        So there are <strong>no threshold flags, no variant-specific limits, no
+        margin-to-threshold distances</strong> anywhere in the feature set. The
+        models had to find the operating limits themselves. That is why the
+        binary stage lands at 0.877 rather than 0.99.
+      </p>
+    </div>
+
+    <figure>
+      <div class="mount"><img src="fig/operating_envelope.png" alt="Scatter plot of torque against rotational speed with failures overplotted, showing failures clustered in two opposite corners"></div>
+      <figcaption>
+        <b>Figure 1 · The operating envelope</b>
+        The healthy cloud traces a constant-power hyperbola — torque and speed
+        correlate at r ≈ −0.88, because to cut harder the spindle turns slower.
+        Failures sit in two opposite corners: low-speed/high-torque (overstrain
+        and heat) and high-speed/low-torque (the low end of the power band). No
+        single linear boundary separates two opposite corners from the middle,
+        which predicts the Stage 3 result before a model is fitted.
+      </figcaption>
+    </figure>
+
+    <div class="pair">
+      <figure>
+        <div class="mount"><img src="fig/wear_vs_failure.png" alt="Bar chart of failure rate by tool wear band, rising sharply past 200 minutes"></div>
+        <figcaption>
+          <b>Figure 2 · Wear hazard</b>
+          Failure rate is flat for most of tool life, then climbs steeply past
+          200 minutes. A population hazard curve, not a degradation trajectory —
+          each row is an independent cycle.
+        </figcaption>
+      </figure>
+      <figure>
+        <div class="mount"><img src="fig/class_balance.png" alt="Bar chart showing 9,661 healthy cycles against 339 failures"></div>
+        <figcaption>
+          <b>Figure 3 · Why accuracy is banned</b>
+          339 failures in 10,000 cycles. Predicting "healthy" every time scores
+          96.6% accuracy and prevents zero breakdowns.
+        </figcaption>
+      </figure>
+    </div>
+
+    <p style="margin-top:22px">
+      No rows were removed. Rotational speed carries the largest population of
+      statistical outliers, and the failure rate <em>among</em> those outliers is
+      several times the fleet rate — they are machines running at the edge of
+      their envelope, which is exactly the population the system exists to catch.
+    </p>
+  </section>
+
+  <!-- ================= STAGE 3 ================= -->
+  <section>
+    <div class="eyebrow">Stage 3 · Baseline models</div>
+    <h2>Three models, in increasing order of sophistication</h2>
+    <p>
+      Logistic regression first, as a fully interpretable reference. Then a
+      random forest, then gradient boosting. No deep learning: with 10,000 rows
+      and 339 positives it would be harder to justify and harder to explain.
+    </p>
+    <div class="scroller">
+      <table>
+        <caption>
+          Five-fold stratified cross-validation on 8,000 training rows. The whole
+          pipeline — impute, scale, one-hot — is refitted inside every fold.
+        </caption>
+        <thead>
+          <tr><th>Model</th><th class="num">CV PR-AUC</th><th class="num">Std dev</th><th>Imbalance handling</th></tr>
+        </thead>
+        <tbody>
+          <tr class="marked"><td>Random forest <span style="font-weight:400;color:var(--ink-3)">— selected</span></td><td class="num">0.881</td><td class="num">±0.025</td><td>balanced subsample weights</td></tr>
+          <tr><td>XGBoost</td><td class="num">0.864</td><td class="num">±0.031</td><td>scale_pos_weight ≈ 28.5</td></tr>
+          <tr><td>Logistic regression</td><td class="num">0.473</td><td class="num">±0.056</td><td>balanced class weights</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure>
+      <div class="mount"><img src="fig/pr_curves_cv.png" alt="Precision-recall curves for three models, with the two tree ensembles far above the linear model"></div>
+      <figcaption>
+        <b>Figure 4 · Precision-recall, out-of-fold</b>
+        The gap between the tree ensembles and the linear model is the gap
+        Figure 1 predicted. Note also how differently the curve families read:
+        ROC-AUC is respectable for all three models, including the linear one,
+        because the enormous negative class flatters it. At a 3.4% event rate
+        PR-AUC is the honest view — which is why it is the headline here.
+      </figcaption>
+    </figure>
+
+    <h3>The alarm threshold is a business decision</h3>
+    <p>
+      A classifier emits a probability; maintenance needs a yes/no. For a 3.4%
+      event rate, 0.5 is close to never correct. The assumption used here:
+      <strong>a missed failure costs 10× an unnecessary inspection.</strong> Both
+      true and false positives incur the same inspection cost, so it cancels, and
+      the objective reduces to <code>cost = 10 × missed + 1 × false alarms</code>.
+    </p>
+
+    <figure>
+      <div class="mount"><img src="fig/threshold_cost.png" alt="U-shaped curve of expected maintenance cost against decision threshold, minimised at 0.251"></div>
+      <figcaption>
+        <b>Figure 5 · Cost-optimal operating point</b>
+        Minimum at a threshold of <strong>0.251</strong>, chosen entirely on
+        out-of-fold training predictions. The curve is steep to the left of the
+        minimum and shallow to the right: being slightly too aggressive costs far
+        less than being slightly too conservative. That asymmetry is the whole
+        argument for tuning the threshold rather than accepting 0.5.
+      </figcaption>
+    </figure>
+
+    <p>
+      Because the 10:1 ratio was <em>chosen</em> rather than measured, its
+      influence is quantified rather than hidden. A maintenance manager picks the
+      row; the model supplies the trade-off.
+    </p>
+    <div class="scroller">
+      <table>
+        <caption>Out-of-fold sensitivity of the operating point to the cost assumption.</caption>
+        <thead>
+          <tr>
+            <th>Miss : false alarm</th>
+            <th class="num">Threshold</th>
+            <th class="num">Precision</th>
+            <th class="num">Recall</th>
+            <th class="num">False alarms</th>
+            <th class="num">Missed</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>5 : 1</td><td class="num">0.321</td><td class="num">83.4%</td><td class="num">83.4%</td><td class="num">45</td><td class="num">45</td></tr>
+          <tr class="marked"><td>10 : 1 — used</td><td class="num">0.251</td><td class="num">72.5%</td><td class="num">85.6%</td><td class="num">88</td><td class="num">39</td></tr>
+          <tr><td>20 : 1</td><td class="num">0.126</td><td class="num">49.1%</td><td class="num">88.9%</td><td class="num">250</td><td class="num">30</td></tr>
+          <tr><td>50 : 1</td><td class="num">0.054</td><td class="num">31.6%</td><td class="num">94.5%</td><td class="num">555</td><td class="num">15</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="notice info">
+      <span class="tag">On class imbalance</span>
+      <p>
+        Handled with class weights, <strong>not SMOTE</strong>. Synthetic sensor
+        readings can be physically impossible — a torque/speed pair off the
+        constant-power hyperbola describes a machine that cannot exist — and
+        oversampling must never touch a validation fold. Class weighting has
+        neither problem.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= STAGE 4 ================= -->
+  <section>
+    <div class="eyebrow">Stage 4 · Anomaly detection</div>
+    <h2>A second opinion for faults nobody labelled</h2>
+    <p>
+      The classifier can only recognise the four modes it was trained on. A real
+      plant also suffers faults with no labelled examples: a new tool supplier, a
+      degrading coolant pump, a miscalibrated sensor. An Isolation Forest fitted
+      on <strong>healthy rows only</strong> answers a different question — is this
+      machine operating unlike anything in its own normal history?
+    </p>
+    <figure>
+      <div class="mount"><img src="fig/anomaly_lift.png" alt="Bar chart of inspection lift over random at four fleet fractions, peaking at 19x for the top 1 percent"></div>
+      <figcaption>
+        <b>Figure 6 · Inspection efficiency</b>
+        Inspecting the 1% most anomalous machines finds failures at roughly
+        <strong>19× the rate of random inspection</strong> — from a model never
+        shown a single failure label. ROC-AUC 0.892, PR-AUC 0.364.
+      </figcaption>
+    </figure>
+    <p>
+      The honest read: clearly informative, clearly weaker than the supervised
+      classifier, and that is the expected result. Most failures here occur at
+      operating points that are individually unremarkable and only dangerous in
+      combination — which an unsupervised detector with no label access cannot
+      know. It earns its place by covering fault types a supervised model
+      structurally cannot.
+    </p>
+  </section>
+
+  <!-- ================= STAGE 5 ================= -->
+  <section>
+    <div class="eyebrow">Stage 5 · Predictive maintenance</div>
+    <h2>Which fault is developing — and why this is not RUL</h2>
+    <p>
+      Remaining useful life needs run-to-failure trajectories: the same unit
+      tracked over time until it dies, so that "cycles remaining" is observable.
+      AI4I has no such structure — each row is an independent snapshot with no
+      unit identity carried across rows. <code>Tool wear [min]</code> looks like a
+      clock, but nothing links one row to the next.
+    </p>
+    <p>
+      Manufacturing an RUL target from the tool-wear threshold would yield
+      <code>240 − tool_wear</code>: arithmetic dressed up as a model. So
+      <strong>RUL is not claimed here.</strong> What the data does support is
+      fault-mode diagnosis — the step that turns an alarm into a work order.
+    </p>
+    <figure>
+      <div class="mount"><img src="fig/fault_mode_quality.png" alt="Bar chart of cross-validated PR-AUC per fault mode with sample sizes"></div>
+      <figcaption>
+        <b>Figure 7 · Diagnosis quality by mode</b>
+        One binary head per mode, so co-occurring faults are represented
+        honestly. Conditional on a failure being flagged; n is the number of
+        training positives.
+      </figcaption>
+    </figure>
+    <div class="notice crit">
+      <span class="tag">Reading these numbers honestly</span>
+      <p>
+        Power scores PR-AUC 1.000 and heat dissipation 0.998. That is
+        <strong>structural, not an achievement</strong>: AI4I's fault modes are
+        <em>defined</em> by threshold rules over the physical quantities in
+        Stage 2, so recovering a cut point on a feature the model sees directly
+        is not a hard inference problem. No rule or flag was fed in — the model
+        found the cut points itself — but the fault-mode stage is still the wrong
+        measure of this project's difficulty. <strong>The binary stage is the
+        right one.</strong>
+      </p>
+      <p>
+        Tool wear, at 0.889, is the one mode with genuine irreducible difficulty:
+        the fewest examples (36) and a stochastic rule. It is also, as the
+        principal finding above shows, where every avoidable miss lives.
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= STAGE 6 ================= -->
+  <section>
+    <div class="eyebrow">Stage 6 · Explainability</div>
+    <h2>No line stops because a model said so</h2>
+    <p>
+      An engineer needs to know <em>why</em> a machine was flagged, in quantities
+      they recognise. SHAP gives each feature an additive contribution to a
+      specific prediction.
+    </p>
+    <figure>
+      <div class="mount"><img src="fig/shap_global.png" alt="Horizontal bar chart of mean absolute SHAP values by feature"></div>
+      <figcaption>
+        <b>Figure 8 · What drives risk across the fleet</b>
+        A useful audit of the feature engineering: four of the five derived
+        quantities rank in the top six, above most of the raw channels they were
+        computed from. Absolute air and process temperature — the least
+        informative quantities in the distribution plots — rank near the bottom,
+        while their differential ranks well above them.
+      </figcaption>
+    </figure>
+    <figure>
+      <div class="mount"><img src="fig/local_explanation.png" alt="Horizontal bar chart of signed SHAP contributions for a single flagged machine"></div>
+      <figcaption>
+        <b>Figure 9 · One machine's decision</b>
+        The highest-risk machine in the held-out set, at 97.3% failure
+        probability against a 25.1% threshold. Diagnosed as a power failure with
+        98.3% confidence; it did fail. Mechanical power, torque and specific
+        loading are the drivers — the sentence a technician actually reads.
+      </figcaption>
+    </figure>
+    <div class="notice info">
+      <span class="tag">A units detail that is easy to get wrong</span>
+      <p>
+        <code>TreeExplainer</code> reports contributions in whatever space the
+        model's raw output occupies: <strong>probability</strong> for a random
+        forest, which averages leaf class frequencies, and
+        <strong>log-odds</strong> for gradient boosting, the additive margin
+        before the logistic link. <code>+0.20</code> means very different things
+        in the two cases, so the explainer detects its model and labels every
+        figure accordingly.
+      </p>
+    </div>
+    <p>
+      The false alarms are worth studying rather than hiding. They are not
+      random: the model flags machines in genuinely marginal regions — high
+      strain, marginal cooling — that happened to complete the cycle anyway. At a
+      10:1 cost ratio, inspecting them is the correct call even though nothing
+      was wrong this time.
+    </p>
+  </section>
+
+  <!-- ================= LEAKAGE ================= -->
+  <section>
+    <div class="eyebrow">Method controls</div>
+    <h2>What keeps these numbers meaningful</h2>
+    <ul class="prose-wide">
+      <li>The held-out set of 2,000 machines is scored <strong>exactly once</strong>, at the very end.</li>
+      <li>The decision threshold is tuned only on out-of-fold training predictions — it is a fitted parameter like any other.</li>
+      <li>Imputation, scaling and one-hot encoding are refitted <strong>inside every CV fold</strong>, so no validation-fold statistic reaches its own training fold.</li>
+      <li>The anomaly detector never sees a label while fitting.</li>
+      <li><code>UDI</code> and <code>Product ID</code> are excluded as identifiers — one is a row counter, the other encodes the machine variant that is already a feature.</li>
+      <li>Every stage is seeded (<code>random_state = 42</code>), so a fresh run reproduces every figure on this page.</li>
+    </ul>
+  </section>
+
+  <!-- ================= LIMITS ================= -->
+  <section>
+    <div class="eyebrow">Limitations</div>
+    <h2>Read these before trusting a number</h2>
+    <div class="notice">
+      <span class="tag">Known and accounted for</span>
+      <ul style="margin-bottom:0">
+        <li><strong>A 2.7% label-noise floor</strong> caps achievable recall; it is not a model defect.</li>
+        <li><strong>Fault diagnosis is conditional</strong> on a failure being flagged, and covers only the four physically-driven modes.</li>
+        <li><strong>The dataset is synthetic.</strong> Realistic and standard as a benchmark, but real plant data brings sensor drift, missing intervals and regime changes that none of this exercises.</li>
+        <li><strong>Small mode populations.</strong> Tool-wear failure has 36 training examples, so its score carries real variance.</li>
+        <li><strong>No RUL, by design</strong> — the data has no run-to-failure trajectories. A genuine RUL study needs NASA C-MAPSS or comparable data.</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    <p>
+      <strong>Dataset:</strong> AI4I 2020 Predictive Maintenance Dataset, UCI
+      Machine Learning Repository — 10,000 rows, 14 columns, synthetic but
+      constructed to reflect real industrial predictive-maintenance data.
+      Verified on load: 339 failures and mode counts TWF 46 / HDF 115 / PWF 95 /
+      OSF 98 / RNF 19, matching the published dataset exactly.
+    </p>
+    <p>
+      <strong>Stack:</strong> scikit-learn, XGBoost, SHAP, pandas, matplotlib,
+      Streamlit. Six executed notebooks, a reproducible pipeline
+      (<code>python run_pipeline.py</code>, ~70 s) and an interactive dashboard
+      accompany this report.
+    </p>
+  </footer>
+
+</div>

@@ -1,0 +1,66 @@
+{
+  "version": "1.0.0",
+  "selected_model": "Random forest",
+  "decision_threshold": 0.251,
+  "threshold_rule": "minimises expected maintenance cost on out-of-fold training predictions, with a missed failure costing 10x an unnecessary inspection",
+  "cost_false_negative": 10.0,
+  "cost_false_positive": 1.0,
+  "feature_cols": [
+    "Air temperature [K]",
+    "Process temperature [K]",
+    "Rotational speed [rpm]",
+    "Torque [Nm]",
+    "Tool wear [min]",
+    "mechanical_power_W",
+    "temp_differential_K",
+    "wear_torque_strain_minNm",
+    "torque_per_rpm",
+    "cooling_load_index",
+    "Type"
+  ],
+  "engineered_cols": [
+    "mechanical_power_W",
+    "temp_differential_K",
+    "wear_torque_strain_minNm",
+    "torque_per_rpm",
+    "cooling_load_index"
+  ],
+  "shap_units": "probability",
+  "mode_cols": [
+    "TWF",
+    "HDF",
+    "PWF",
+    "OSF"
+  ],
+  "anomaly_score_reference": {
+    "p50": 0.47036745195397994,
+    "p90": 0.5444021577237751,
+    "p99": 0.6164015512142133
+  },
+  "cv_pr_auc": {
+    "Logistic regression": 0.47293308657515176,
+    "Random forest": 0.8811778806641227,
+    "XGBoost": 0.863619761817497
+  },
+  "test_metrics": {
+    "pr_auc": 0.8768118700750915,
+    "roc_auc": 0.9687614176105226,
+    "precision": 0.7073170731707317,
+    "recall": 0.8529411764705882,
+    "f2": 0.8192090395480225,
+    "tp": 58,
+    "fp": 24,
+    "fn": 10,
+    "tn": 1908,
+    "cost_saved_pct": 81.76470588235294
+  },
+  "fault_mode_top1_accuracy": 0.9696969696969697,
+  "noise_floor": {
+    "n_failures": 339,
+    "n_unexplained_failures": 9,
+    "unexplained_share_of_failures": 0.02654867256637168,
+    "n_explainable_failures": 330
+  },
+  "training_rows": 8000,
+  "test_rows": 2000
+}
